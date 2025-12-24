@@ -1,694 +1,557 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Death on Lake Barron - A murder mystery investigation game">
-        <meta name="theme-color" content="#1a1a1a">
-        <title>Death on Lake Barron: Murder Mystery</title>
-      <link rel="manifest" href="manifest.json">
-      <style>
-                :root {
-                              --primary-color: #d32f2f;
-                              --secondary-color: #1a1a1a;
-                              --accent-color: #ffd700;
-                              --background-dark: #0d0d0d;
-                              --background-light: #2a2a2a;
-                              --text-primary: #ffffff;
-                              --text-secondary: #cccccc;
-                              --border-color: #444444;
-                              --success-color: #4caf50;
-                              --warning-color: #ff9800;
-                }
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <meta name="description" content="Death on Lake Barron - A murder mystery investigation game">
+     <meta name="theme-color" content="#1a1a1a">
+     <title>Death on Lake Barron: Murder Mystery</title>
+   <link rel="manifest" href="manifest.json">
+   <style>
+      @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
 
-                * { margin: 0; padding: 0; box-sizing: border-box; }
+      :root {
+         --primary-color: #d32f2f;
+         --secondary-color: #1a1a1a;
+         --accent-color: #ffd700;
+         --background-dark: #0d0d0d;
+         --background-light: #2a2a2a;
+         --text-primary: #ffffff;
+         --text-secondary: #cccccc;
+         --border-color: #444444;
+         --success-color: #4caf50;
+         --warning-color: #ff9800;
+      }
 
-                html, body {
-                              width: 100%;
-                              height: 100%;
-                              font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                              background-color: var(--background-dark);
-                              color: var(--text-primary);
-                              overflow: hidden;
-                }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
 
-          #app {
-                        width: 100%;
-                        height: 100%;
-                        display: flex;
-                        flex-direction: column;
-          }
+      html, body {
+         width: 100%;
+         height: 100%;
+         font-family: 'Poppins', sans-serif;
+         background-color: var(--background-dark);
+         color: var(--text-primary);
+         overflow: hidden;
+      }
 
-                .screen {
-                              display: none;
-                              width: 100%;
-                              height: 100%;
-                              position: absolute;
-                              top: 0;
-                              left: 0;
-                              z-index: 1;
-                }
+      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+      @keyframes slideDown { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+      @keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+      @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+      @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
+      @keyframes glow { 0%, 100% { box-shadow: 0 0 5px rgba(211, 47, 47, 0.2); } 50% { box-shadow: 0 0 20px rgba(211, 47, 47, 0.5); } }
 
-                .screen.active {
-                              display: flex;
-                              flex-direction: column;
-                              position: relative;
-                }
+      #app {
+         width: 100%;
+         height: 100%;
+         display: flex;
+         flex-direction: column;
+      }
 
-                #splash-screen {
-                              background: linear-gradient(135deg, var(--background-dark) 0%, var(--secondary-color) 100%);
-                              justify-content: center;
-                              align-items: center;
-                              padding: 20px;
-                }
+      .screen {
+         display: none;
+         width: 100%;
+         height: 100%;
+         position: absolute;
+         top: 0;
+         left: 0;
+         z-index: 1;
+         animation: fadeIn 0.6s ease-out;
+      }
 
-                .splash-content {
-                              text-align: center;
-                              max-width: 500px;
-                              width: 100%;
-                }
+      .screen.active {
+         display: flex;
+         flex-direction: column;
+         position: relative;
+         z-index: 10;
+      }
 
-                .splash-header h1 {
-                              font-size: 2.5em;
-                              font-weight: bold;
-                              color: var(--primary-color);
-                              text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-                              margin-bottom: 10px;
-                              letter-spacing: 2px;
-                }
+      #splash-screen {
+         background: linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 50%, #2a1a1a 100%);
+         justify-content: center;
+         align-items: center;
+         padding: 20px;
+         animation: fadeIn 0.8s ease-out;
+      }
 
-                .splash-case-number {
-                              font-size: 0.9em;
-                              color: var(--text-secondary);
-                              letter-spacing: 1px;
-                              margin-bottom: 30px;
-                }
+      .splash-content {
+         text-align: center;
+         max-width: 500px;
+         width: 100%;
+         animation: slideUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+      }
 
-                .splash-briefing {
-                              margin-bottom: 40px;
-                              line-height: 1.8;
-                }
+      .splash-header h1 {
+         font-size: 3em;
+         font-weight: 700;
+         color: var(--primary-color);
+         text-shadow: 0 4px 12px rgba(211, 47, 47, 0.3), 0 8px 20px rgba(0, 0, 0, 0.8);
+         margin-bottom: 10px;
+         letter-spacing: 3px;
+         animation: slideUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
 
-                .splash-briefing p {
-                              font-size: 1em;
-                              margin-bottom: 10px;
-                              color: var(--text-primary);
-                }
+      .splash-case-number {
+         font-size: 0.9em;
+         color: var(--text-secondary);
+         letter-spacing: 2px;
+         margin-bottom: 30px;
+         animation: slideUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+      }
 
-                .splash-question {
-                              font-size: 1.2em;
-                              color: var(--accent-color);
-                              font-weight: bold;
-                              margin-top: 20px !important;
-                }
+      .splash-briefing {
+         margin-bottom: 40px;
+         line-height: 1.8;
+         animation: slideUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+      }
 
-                .btn {
-                              padding: 12px 24px;
-                              border: none;
-                              border-radius: 5px;
-                              font-size: 1em;
-                              cursor: pointer;
-                              transition: all 0.3s ease;
-                              font-weight: bold;
-                              letter-spacing: 1px;
-                }
+      .splash-briefing p {
+         font-size: 1em;
+         margin-bottom: 12px;
+         color: var(--text-primary);
+         transition: color 0.3s ease;
+      }
 
-                .btn-primary {
-                              background-color: var(--primary-color);
-                              color: white;
-                              width: 100%;
-                              margin-top: 30px;
-                              padding: 15px 30px;
-                              font-size: 1.1em;
-                }
+      .splash-question {
+         font-size: 1.3em;
+         color: var(--accent-color);
+         font-weight: 600;
+         margin-top: 20px !important;
+         animation: pulse 2s ease-in-out infinite;
+      }
 
-                .btn-primary:hover {
-                              background-color: #b71c1c;
-                              transform: scale(1.05);
-                }
+      .btn {
+         padding: 12px 24px;
+         border: none;
+         border-radius: 8px;
+         font-size: 1em;
+         cursor: pointer;
+         transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+         font-weight: 600;
+         letter-spacing: 1px;
+         position: relative;
+         overflow: hidden;
+      }
 
-                .app-header {
-                              background-color: var(--secondary-color);
-                              border-bottom: 2px solid var(--primary-color);
-                              padding: 15px 20px;
-                              display: flex;
-                              justify-content: space-between;
-                              align-items: center;
-                              z-index: 100;
-                }
+      .btn::before {
+         content: '';
+         position: absolute;
+         top: 50%;
+         left: 50%;
+         width: 0;
+         height: 0;
+         border-radius: 50%;
+         background: rgba(255, 255, 255, 0.3);
+         transform: translate(-50%, -50%);
+         transition: width 0.6s, height 0.6s;
+      }
 
-                .app-header h2 {
-                              font-size: 1.3em;
-                              color: var(--text-primary);
-                              margin: 0;
-                }
+      .btn:active::before {
+         width: 300px;
+         height: 300px;
+      }
 
-                .content-area {
-                              flex: 1;
-                              overflow-y: auto;
-                              padding: 20px;
-                              margin-top: 0px;
-                }
+      .btn-primary {
+         background-color: var(--primary-color);
+         color: white;
+         width: 100%;
+         margin-top: 30px;
+         padding: 15px 30px;
+         font-size: 1.1em;
+         box-shadow: 0 4px 15px rgba(211, 47, 47, 0.3);
+         animation: scaleIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both;
+      }
 
-                .page-header {
-                              margin-bottom: 30px;
-                              border-bottom: 2px solid var(--primary-color);
-                              padding-bottom: 15px;
-                }
+      .btn-primary:hover {
+         background-color: #b71c1c;
+         transform: translateY(-3px);
+         box-shadow: 0 8px 25px rgba(211, 47, 47, 0.5);
+      }
 
-                .page-header h2 {
-                              font-size: 1.8em;
-                              color: var(--primary-color);
-                              margin-bottom: 5px;
-                }
+      .btn-primary:active {
+         transform: translateY(-1px);
+      }
 
-                .evidence-grid {
-                              display: grid;
-                              grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-                              gap: 15px;
-                              margin-bottom: 30px;
-                }
+      .app-header {
+         background-color: var(--secondary-color);
+         border-bottom: 2px solid var(--primary-color);
+         padding: 15px 20px;
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         z-index: 100;
+         animation: slideDown 0.6s ease-out;
+         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+      }
 
-                .evidence-card {
-                              background-color: var(--background-light);
-                              border: 2px solid var(--border-color);
-                              border-radius: 8px;
-                              padding: 15px;
-                              cursor: pointer;
-                              transition: all 0.3s ease;
-                              text-align: center;
-                }
+      .app-header h2 {
+         font-size: 1.3em;
+         color: var(--text-primary);
+         margin: 0;
+         font-weight: 600;
+      }
 
-                .evidence-card:hover {
-                              background-color: var(--secondary-color);
-                              border-color: var(--primary-color);
-                              transform: translateY(-5px);
-                              box-shadow: 0 5px 15px rgba(211, 47, 47, 0.3);
-                }
+      .content-area {
+         flex: 1;
+         overflow-y: auto;
+         padding: 20px;
+         margin-top: 0;
+         animation: slideUp 0.6s ease-out 0.2s both;
+         scroll-behavior: smooth;
+      }
 
-                .evidence-title {
-                              font-weight: bold;
-                              color: var(--text-primary);
-                              font-size: 0.95em;
-                }
+      .page-header {
+         margin-bottom: 30px;
+         border-bottom: 2px solid var(--primary-color);
+         padding-bottom: 15px;
+         animation: slideUp 0.6s ease-out;
+      }
 
-                .suspect-card {
-                              background-color: var(--background-light);
-                              border-left: 4px solid var(--primary-color);
-                              border-radius: 8px;
-                              padding: 20px;
-                              margin-bottom: 20px;
-                              transition: all 0.3s ease;
-                }
+      .page-header h2 {
+         font-size: 1.8em;
+         color: var(--primary-color);
+         margin-bottom: 5px;
+         font-weight: 700;
+      }
 
-                .suspect-card:hover {
-                              background-color: var(--secondary-color);
-                              transform: translateX(5px);
-                }
+      .page-header p {
+         color: var(--text-secondary);
+         font-size: 0.95em;
+      }
 
-                .suspect-name {
-                              font-size: 1.3em;
-                              font-weight: bold;
-                              color: var(--primary-color);
-                              margin-bottom: 10px;
-                }
+      .evidence-grid {
+         display: grid;
+         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+         gap: 15px;
+         margin-bottom: 30px;
+         animation: slideUp 0.6s ease-out 0.1s both;
+      }
 
-                          .suspect-details {
-                                        color: var(--text-secondary);
-                                        margin-bottom: 15px;
-                                        line-height: 1.6;
-                          }
+      .evidence-card {
+         background-color: var(--background-light);
+         border: 2px solid var(--border-color);
+         border-radius: 10px;
+         padding: 15px;
+         cursor: pointer;
+         transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+         text-align: center;
+         position: relative;
+         overflow: hidden;
+         animation: scaleIn 0.5s ease-out backwards;
+      }
 
-          .modal {
-                    position: fixed;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
-                        background-color: rgba(0, 0, 0, 0.8);
-                        display: none;
-                        align-items: center;
-                        justify-content: center;
-                        z-index: 300;
-                        padding: 20px;
-          }
+      .evidence-card:nth-child(1) { animation-delay: 0s; }
+      .evidence-card:nth-child(2) { animation-delay: 0.05s; }
+      .evidence-card:nth-child(3) { animation-delay: 0.1s; }
+      .evidence-card:nth-child(4) { animation-delay: 0.15s; }
+      .evidence-card:nth-child(n+5) { animation-delay: 0.2s; }
 
-                .modal.active {
-                              display: flex;
-                }
+      .evidence-card::before {
+         content: '';
+         position: absolute;
+         top: 0;
+         left: -100%;
+         width: 100%;
+         height: 100%;
+         background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+         transition: left 0.5s ease;
+      }
 
-                .modal-content {
-                              background-color: var(--secondary-color);
-                              border: 2px solid var(--primary-color);
-                              border-radius: 10px;
-                              max-width: 500px;
-                              width: 100%;
-                              max-height: 80vh;
-                              overflow-y: auto;
-                              position: relative;
-                              padding: 30px;
-                }
+      .evidence-card:hover::before {
+         left: 100%;
+      }
 
-                .modal-close {
-                              position: absolute;
-                              top: 15px;
-                              right: 15px;
-                              background: none;
-                              border: none;
-                              color: var(--text-primary);
-                              font-size: 1.5em;
-                              cursor: pointer;
-                }
+      .evidence-card:hover {
+         background-color: var(--secondary-color);
+         border-color: var(--primary-color);
+         transform: translateY(-8px);
+         box-shadow: 0 12px 30px rgba(211, 47, 47, 0.3);
+      }
 
-                input[type="radio"],
-                input[type="checkbox"] {
-                              margin-right: 10px;
-                              cursor: pointer;
-                }
+      .evidence-title {
+         font-weight: 600;
+         color: var(--text-primary);
+         font-size: 0.95em;
+         transition: color 0.3s ease;
+      }
 
-                label {
-                              display: block;
-                              margin-bottom: 10px;
-                              color: var(--text-primary);
-                              font-weight: bold;
-                }
+      .evidence-card:hover .evidence-title {
+         color: var(--accent-color);
+      }
 
-                .alert {
-                              padding: 15px;
-                              border-radius: 5px;
-                              margin-bottom: 20px;
-                }
+      .suspect-card {
+         background-color: var(--background-light);
+         border-left: 4px solid var(--primary-color);
+         border-radius: 10px;
+         padding: 20px;
+         margin-bottom: 20px;
+         transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+         animation: slideUp 0.6s ease-out backwards;
+      }
 
-                .alert-success {
-                              background-color: rgba(76, 175, 80, 0.2);
-                              border-left: 4px solid var(--success-color);
-                              color: var(--success-color);
-                }
+      .suspect-card:nth-child(1) { animation-delay: 0s; }
+      .suspect-card:nth-child(2) { animation-delay: 0.1s; }
+      .suspect-card:nth-child(3) { animation-delay: 0.2s; }
+      .suspect-card:nth-child(4) { animation-delay: 0.3s; }
 
-                .list-item {
-                              background-color: var(--background-light);
-                              padding: 15px;
-                              margin-bottom: 10px;
-                              border-left: 4px solid var(--accent-color);
-                              border-radius: 5px;
-                }
+      .suspect-card:hover {
+         background-color: var(--secondary-color);
+         transform: translateX(10px);
+         box-shadow: 0 8px 25px rgba(211, 47, 47, 0.2);
+         border-left-color: var(--accent-color);
+      }
 
-                @media (max-width: 768px) {
-                              .splash-header h1 { font-size: 2em; }
-                              .evidence-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
-                              .page-header h2 { font-size: 1.5em; }
-                              .content-area { padding: 15px; }
-                }
+      .suspect-name {
+         font-size: 1.3em;
+         font-weight: 700;
+         color: var(--primary-color);
+         margin-bottom: 10px;
+      }
 
-                @media (max-width: 480px) {
-                              .splash-header h1 { font-size: 1.8em; }
-                              .evidence-grid { grid-template-columns: repeat(2, 1fr); }
-                              .app-header h2 { font-size: 1.1em; }
-                              .page-header h2 { font-size: 1.3em; }
-                }
-            </style>
+      .suspect-details {
+         color: var(--text-secondary);
+         margin-bottom: 15px;
+         line-height: 1.6;
+         font-size: 0.95em;
+      }
+
+      .modal {
+         position: fixed;
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 100%;
+         background-color: rgba(0, 0, 0, 0.85);
+         display: none;
+         align-items: center;
+         justify-content: center;
+         z-index: 300;
+         padding: 20px;
+         animation: fadeIn 0.4s ease-out;
+      }
+
+      .modal.active {
+         display: flex;
+      }
+
+      .modal-content {
+         background-color: var(--secondary-color);
+         border: 2px solid var(--primary-color);
+         border-radius: 15px;
+         max-width: 500px;
+         width: 100%;
+         max-height: 80vh;
+         overflow-y: auto;
+         position: relative;
+         padding: 30px;
+         box-shadow: 0 20px 60px rgba(211, 47, 47, 0.3);
+         animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      .modal-close {
+         position: absolute;
+         top: 15px;
+         right: 15px;
+         background: none;
+         border: none;
+         color: var(--text-primary);
+         font-size: 1.8em;
+         cursor: pointer;
+         transition: all 0.3s ease;
+         width: 40px;
+         height: 40px;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         border-radius: 50%;
+      }
+
+      .modal-close:hover {
+         background-color: rgba(211, 47, 47, 0.2);
+         color: var(--primary-color);
+      }
+
+      input[type="radio"], input[type="checkbox"] {
+         margin-right: 10px;
+         cursor: pointer;
+         transition: all 0.3s ease;
+      }
+
+      label {
+         display: block;
+         margin-bottom: 12px;
+         color: var(--text-primary);
+         font-weight: 500;
+         transition: color 0.3s ease;
+         cursor: pointer;
+      }
+
+      label:hover {
+         color: var(--accent-color);
+      }
+
+      .list-item {
+         background-color: var(--background-light);
+         padding: 15px;
+         margin-bottom: 10px;
+         border-left: 4px solid var(--accent-color);
+         border-radius: 8px;
+         animation: slideUp 0.6s ease-out backwards;
+         transition: all 0.3s ease;
+      }
+
+      .list-item:hover {
+         background-color: rgba(255, 215, 0, 0.05);
+         box-shadow: 0 4px 12px rgba(255, 215, 0, 0.1);
+      }
+
+      .list-item strong {
+         color: var(--accent-color);
+         font-weight: 700;
+      }
+
+      @media (max-width: 768px) {
+         .splash-header h1 { font-size: 2.2em; }
+         .evidence-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
+         .page-header h2 { font-size: 1.5em; }
+         .content-area { padding: 15px; }
+         .btn-primary { font-size: 0.95em; padding: 12px 24px; }
+      }
+
+      @media (max-width: 480px) {
+         .splash-header h1 { font-size: 1.8em; }
+         .evidence-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+         .app-header h2 { font-size: 1.1em; }
+         .page-header h2 { font-size: 1.3em; }
+         .modal-content { padding: 20px; }
+         .suspect-card { padding: 15px; }
+      }
+
+      ::-webkit-scrollbar {
+         width: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+         background: var(--background-dark);
+      }
+
+      ::-webkit-scrollbar-thumb {
+         background: var(--primary-color);
+         border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+         background: var(--accent-color);
+        }
+      </style>
   </head>
   <body>
-        <div id="app">
-                  <!-- SPLASH SCREEN -->
-                  <div id="splash-screen" class="screen active">
-                                <div class="splash-content">
-                                                  <div class="splash-header">
-                                                                        <h1>DEATH ON LAKE BARRON</h1>
-                                                                      <div class="splash-case-number">Case #2000-1216-BRADSHAW</div>div>
-                                                  </div>div>
-                                                
-                                                <div class="splash-briefing">
-                                                                    <p>December 16, 2000. A body is discovered in Lake Barron, Ohio.</p>
-                                                                    <p>The official story: Accidental drowning.</p>
-                                                                    <p>The evidence: Something far more sinister.</p>
-                                                                    <p class="splash-question">Can you uncover the truth?</p>
-                                                </div>div>
-                                                
-                                                <button class="btn btn-primary" onclick="startGame()">
-                                                                    → BEGIN INVESTIGATION ←
-                                                </button>button>
-                                                
-                                                <div style="margin-top: 40px; color: var(--text-secondary);">
-                                                                    <p>Estimated play time: 15-20 minutes</p>
-                                                                    <p>15 evidence items | 4 suspects | 1 killer</p>
-                                                </div>div>
-                                </div>div>
-                  </div>div>
-        
-                <!-- MAIN GAME SCREEN -->
-                <div id="main-screen" class="screen">
-                            <header class="app-header">
-                                            <h2 id="page-title">Investigation Hub</h2>
-                                            <div style="text-align: right; color: var(--text-secondary);">
-                                                                Evidence: <span id="evidence-count">0/15</span>span>
-                                            </div>div>
-                            </header>header>
-                            
-                            <main id="content-area" class="content-area">
-                                            <!-- Content will be loaded here -->
-                            </main>main>
-                </div>div>
-        </div>div>
-  
-      <!-- MODAL FOR DETAILS -->
-      <div id="detail-modal" class="modal">
-              <div class="modal-content">
-                          <button class="modal-close" onclick="closeModal()">✕</button>button>
-                          <div id="modal-body"><!-- Details loaded here --></div>div>
+     <div id="app">
+        <div id="splash-screen" class="screen active">
+           <div class="splash-content">
+              <div class="splash-header">
+                 <h1>DEATH ON LAKE BARRON</h1>
+               <div class="splash-case-number">Case #2000-1216-BRADSHAW</div>div>
               </div>div>
+            <div class="splash-briefing">
+             <p>December 16, 2000. A body is discovered in Lake Barron, Ohio.</p>
+             <p>The official story: Accidental drowning.</p>
+             <p>The evidence: Something far more sinister.</p>
+             <p class="splash-question">Can you uncover the truth?</p>
+            </div>div>
+            <button class="btn btn-primary" onclick="startGame()">→ BEGIN INVESTIGATION ←</button>button>
+            <div style="margin-top: 40px; color: var(--text-secondary);">
+             <p>Estimated play time: 15-20 minutes</p>
+             <p>15 evidence items | 4 suspects | 1 killer</p>
+            </div>div>
+           </div>div>
+        </div>div>
+      
+      <div id="main-screen" class="screen">
+       <header class="app-header">
+        <h2 id="page-title">Investigation Hub</h2>
+        <div style="text-align: right; color: var(--text-secondary);">Evidence: <span id="evidence-count">0/15</span>span></div>div>
+       </header>header>
+       <main id="content-area" class="content-area"></main>main>
       </div>div>
-  
-      <script>
-                // GAME DATA
-                const GAME_DATA = {
-                              evidence: [
-                                {
-                                                      id: 1,
-                                                      title: "Missing Person Report",
-                                                      content: "Official missing person report filed December 18, 2000. Tyler Bradshaw disappeared December 16, age 31. Left for duck hunting, never returned.",
-                                                      details: "Vehicle found at Lake Barron. Derek Haynes claims Tyler never showed up to meeting location."
-                                },
-                                {
-                                                      id: 2,
-                                                      title: "Vehicle Recovery Report",
-                                                      content: "Tyler's 1998 Ford F-150 found parked at Lake Barron north access point. Keys left in ignition. $340 cash in wallet inside vehicle.",
-                                                      details: "CRITICAL: Derek Haynes' fingerprints found INSIDE the vehicle despite his claim of never arriving at location."
-                                },
-                                {
-                                                      id: 3,
-                                                      title: "Crime Scene Photos",
-                                                      content: "Body discovered buried 2+ miles from Lake Barron in wooded area. Wrapped in white tarp. Deliberately concealed indicates premeditation.",
-                                                      details: "Shallow grave showed careful construction. Evidence of knowledge about body disposal techniques."
-                                },
-                                {
-                                                      id: 4,
-                                                      title: "Life Insurance Policy",
-                            content: "Megan Bradshaw is sole beneficiary of $500,000 policy on Tyler's life. Taken out March 15, 1997.",
-                                                      details: "CRITICAL MOTIVE: Megan in severe debt ($66,220). Insurance payout would solve all her financial problems."
-                                },
-                                {
-                                                      id: 5,
-                                                      title: "Death Certificate",
-                                                      content: "Originally classified as 'Accidental Drowning.' AMENDED to 'Homicide - Gunshot Wound to Chest' after autopsy revealed fatal gunshot.",
-                                                      details: "Gunshot wound was the ACTUAL cause of death, not drowning. This indicates homicide, not accident."
-                                },
-                                {
-                                                      id: 6,
-                                                      title: "Detailed Autopsy Report",
-                                                      content: "Dr. Patricia Liu's findings: fatal shotgun wound to anterior chest. Close-range discharge (6-12 feet). Massive hemorrhage and cardiac trauma. Death occurred within minutes.",
-                                                      details: "No defensive wounds suggest victim was either surprised or trusted the killer."
-                                },
-                                {
-                                                      id: 7,
-                                                      title: "Gunshot Residue Analysis",
-                                                      content: "Derek Haynes' jacket sleeve contains 89 GSR particles - consistent with close-range shotgun discharge. Megan's clothing has minimal residue (she was present, not shooter).",
-                                                      details: "Derek's hands show no significant residue - likely wore gloves during discharge."
-                                },
-                                {
-                                                      id: 8,
-                                                      title: "Ballistics Report",
-                                                      content: "Shotgun recovered buried with body: Remington 870 registered to Derek Haynes. Striations match recovered pellets with 99.8% confidence.",
-                                                      details: "Derek purchased ammunition in November 2000. This is HIS weapon, not stolen."
-                                },
-                                {
-                                                      id: 9,
-                                                      title: "Derek Haynes' Witness Statement",
-                                                      content: "Derek claims: 'I waited for Tyler at Lake Barron. He never showed up. I left after 45 minutes.'",
-                                                      details: "LIES DETECTED: Weather records show rain/sleet (Derek said 'dry'). Cell tower data shows him at lake much longer. His fingerprints prove he WAS in truck."
-                                },
-                                {
-                                                      id: 10,
-                                                      title: "Financial Records",
-                                                      content: "Megan: Monthly income $2,800, debt $66,220 (credit cards, student loans, auto). Derek: Monthly income $3,400, debt $51,700. Both recently denied loans.",
-                        details: "Both had financial desperation. Combined financial problems + affair = MOTIVE for conspiracy."
-                                },
-                                {
-                                                      id: 11,
-                                                      title: "Marriage License & Timeline",
-                                                      content: "Tyler & Megan married June 4, 1996. Derek was best man. Derek's divorce finalized 1999. Marriage deteriorating by 2000. Affair likely began September/October 2000.",
-                                                      details: "Friends note Derek & Megan spending suspicious amounts of time together in October/November 2000."
-                                },
-                                {
-                                                      id: 12,
-                                                      title: "Phone Records - CRITICAL",
-                                                      content: "December 14 (2 days before murder): Derek & Megan have 83-MINUTE phone call at 9:15 PM. December 15: Derek calls Tyler inviting him to hunt (Tyler accepts). December 16: Derek at Lake Barron all day despite claim of leaving at 8:15 AM.",
-                                                      details: "The 83-minute call suggests they were coordinating the murder plan. Derek called Megan immediately after Tyler was killed."
-                                },
-                                {
-                                                      id: 13,
-                                                      title: "Witness Interviews",
-                                                      content: "Friend #1: 'Megan spending suspicious time with Derek in October. Defensive when I mentioned it.' Friend #2: 'Tyler told me marriage was falling apart. He suspected Megan had an affair.' Friend #3: 'Saw Derek & Megan at restaurant together in December. Acting intimately.'",
-                                                      details: "Consistent testimony about affair + financial stress + relationship breakdown."
-                                },
-                                {
-                                                      id: 14,
-                                                      title: "Body Recovery Report",
-                                                      content: "Body found February 14, 2001 (2 months after death). Identified via dental records. Decomposition consistent with December burial in cold weather.",
-                                                      details: "Timeline matches December 16 disappearance. Premeditated crime - murderers knew where to hide body."
-                                },
-                                {
-                                                      id: 15,
-                                                      title: "Forensic Analysis - Final Report",
-                                                      content: "CONCLUSION: Tyler Bradshaw died from shotgun wound. Murder was HOMICIDE not accident. Weapon: Derek Haynes' registered shotgun. Gunshot residue: On Derek's clothing. Motive: Insurance ($500K) + romantic (affair). Both Derek & Megan had opportunity.",
-                                                      details: "PROBABILITY OF GUILT: 95%+ for conspiracy between Derek Haynes & Megan Bradshaw."
-                                }
-                                            ],
-                    suspects: [
-                      {
-                                            name: "Derek Haynes",
-                                            role: "Best Friend",
-                                            details: "Age 32. Investment Advisor. Recently divorced (1999). Friend of Tyler since college. Motive: Financial difficulty + affair with Megan. Means: His registered shotgun. Opportunity: Called Tyler to arrange hunting trip."
-                      },
-                      {
-                                            name: "Megan Bradshaw",
-                                            role: "Spouse (Wife)",
-                                                      details: "Age 28. Insurance Agent. Beneficiary of $500K policy. In severe debt. Motive: Financial freedom + romantic interest in Derek. Opportunity: Arranged coverup of murder. Means: Conspiracy with Derek."
-                      },
-                      {
-                                            name: "Derek & Megan (Conspiracy)",
-                                            role: "Perpetrators",
-                                            details: "Acting together: Derek fired fatal shot, Megan coordinated logistics. Phone records show planning. Both had motives. Both present at crime scene. Financial benefit goes to Megan. Romantic relationship benefits both."
-                      },
-                      {
-                                            name: "Unknown Party",
-                                            role: "Alternative",
-                                            details: "If neither Derek nor Megan: Random killer theory? Unlikely given financial motive to Megan and presence of Derek's weapon."
-                      }
-                                  ]
-                };
+      
+      <div id="detail-modal" class="modal">
+       <div class="modal-content">
+        <button class="modal-close" onclick="closeModal()">✕</button>button>
+        <div id="modal-body"></div>div>
+       </div>div>
+      </div>div>
+     </div>div>
+   
+   <script>
+      const GAME_DATA = {
+         evidence: [
+           {id:1,title:"Missing Person Report",content:"Official missing person report filed December 18, 2000. Tyler Bradshaw disappeared December 16, age 31. Left for duck hunting, never returned.",details:"Vehicle found at Lake Barron. Derek Haynes claims Tyler never showed up to meeting location."},
+           {id:2,title:"Vehicle Recovery Report",content:"Tyler's 1998 Ford F-150 found parked at Lake Barron north access point. Keys left in ignition. $340 cash in wallet inside vehicle.",details:"CRITICAL: Derek Haynes' fingerprints found INSIDE the vehicle despite his claim of never arriving at location."},
+           {id:3,title:"Crime Scene Photos",content:"Body discovered buried 2+ miles from Lake Barron in wooded area. Wrapped in white tarp. Deliberately concealed indicates premeditation.",details:"Shallow grave showed careful construction. Evidence of knowledge about body disposal techniques."},
+           {id:4,title:"Life Insurance Policy",content:"Megan Bradshaw is sole beneficiary of $500,000 policy on Tyler's life. Taken out March 15, 1997.",details:"CRITICAL MOTIVE: Megan in severe debt ($66,220). Insurance payout would solve all her financial problems."},
+           {id:5,title:"Death Certificate",content:"Originally classified as 'Accidental Drowning.' AMENDED to 'Homicide - Gunshot Wound to Chest' after autopsy revealed fatal gunshot.",details:"Gunshot wound was the ACTUAL cause of death, not drowning. This indicates homicide, not accident."},
+           {id:6,title:"Detailed Autopsy Report",content:"Dr. Patricia Liu's findings: fatal shotgun wound to anterior chest. Close-range discharge (6-12 feet). Massive hemorrhage and cardiac trauma. Death occurred within minutes.",details:"No defensive wounds suggest victim was either surprised or trusted the killer."},
+           {id:7,title:"Gunshot Residue Analysis",content:"Derek Haynes' jacket sleeve contains 89 GSR particles - consistent with close-range shotgun discharge. Megan's clothing has minimal residue (she was present, not shooter).",details:"Derek's hands show no significant residue - likely wore gloves during discharge."},
+           {id:8,title:"Ballistics Report",content:"Shotgun recovered buried with body: Remington 870 registered to Derek Haynes. Striations match recovered pellets with 99.8% confidence.",details:"Derek purchased ammunition in November 2000. This is HIS weapon, not stolen."},
+           {id:9,title:"Derek Haynes' Witness Statement",content:"Derek claims: 'I waited for Tyler at Lake Barron. He never showed up. I left after 45 minutes.'",details:"LIES DETECTED: Weather records show rain/sleet (Derek said 'dry'). Cell tower data shows him at lake much longer. His fingerprints prove he WAS in truck."},
+           {id:10,title:"Financial Records",content:"Megan: Monthly income $2,800, debt $66,220. Derek: Monthly income $3,400, debt $51,700. Both recently denied loans.",details:"Both had financial desperation. Combined financial problems + affair = MOTIVE for conspiracy."},
+           {id:11,title:"Marriage License & Timeline",content:"Tyler & Megan married June 4, 1996. Derek was best man. Derek's divorce finalized 1999. Marriage deteriorating by 2000. Affair likely began September/October 2000.",details:"Friends note Derek & Megan spending suspicious amounts of time together in October/November 2000."},
+           {id:12,title:"Phone Records - CRITICAL",content:"December 14 (2 days before murder): Derek & Megan have 83-MINUTE phone call at 9:15 PM. December 15: Derek calls Tyler inviting him to hunt (Tyler accepts). December 16: Derek at Lake Barron all day despite claim of leaving at 8:15 AM.",details:"The 83-minute call suggests they were coordinating the murder plan. Derek called Megan immediately after Tyler was killed."},
+           {id:13,title:"Witness Interviews",content:"Friend #1: 'Megan spending suspicious time with Derek in October. Defensive when I mentioned it.' Friend #2: 'Tyler told me marriage was falling apart. He suspected Megan had an affair.' Friend #3: 'Saw Derek & Megan at restaurant together in December. Acting intimately.'",details:"Consistent testimony about affair + financial stress + relationship breakdown."},
+           {id:14,title:"Body Recovery Report",content:"Body found February 14, 2001 (2 months after death). Identified via dental records. Decomposition consistent with December burial in cold weather.",details:"Timeline matches December 16 disappearance. Premeditated crime - murderers knew where to hide body."},
+           {id:15,title:"Forensic Analysis - Final Report",content:"CONCLUSION: Tyler Bradshaw died from shotgun wound. Murder was HOMICIDE not accident. Weapon: Derek Haynes' registered shotgun. Gunshot residue: On Derek's clothing. Motive: Insurance ($500K) + romantic (affair). Both Derek & Megan had opportunity.",details:"PROBABILITY OF GUILT: 95%+ for conspiracy between Derek Haynes & Megan Bradshaw."}
+            ],
+         suspects: [
+           {name:"Derek Haynes",role:"Best Friend",details:"Age 32. Investment Advisor. Recently divorced (1999). Friend of Tyler since college. Motive: Financial difficulty + affair with Megan. Means: His registered shotgun. Opportunity: Called Tyler to arrange hunting trip."},
+           {name:"Megan Bradshaw",role:"Spouse (Wife)",details:"Age 28. Insurance Agent. Beneficiary of $500K policy. In severe debt. Motive: Financial freedom + romantic interest in Derek. Opportunity: Arranged coverup of murder. Means: Conspiracy with Derek."},
+           {name:"Derek & Megan (Conspiracy)",role:"Perpetrators",details:"Acting together: Derek fired fatal shot, Megan coordinated logistics. Phone records show planning. Both had motives. Both present at crime scene. Financial benefit goes to Megan. Romantic relationship benefits both."},
+           {name:"Unknown Party",role:"Alternative",details:"If neither Derek nor Megan: Random killer theory? Unlikely given financial motive to Megan and presence of Derek's weapon."}
+            ]
+      };
 
-                // STATE
-                let gameState = {
-                              currentPage: 'splash',
-                              evidenceReviewed: new Set(),
-                              verdict: null
-                };
+      let gameState={currentPage:'splash',evidenceReviewed:new Set(),verdict:null};
 
-                // FUNCTIONS
-                function startGame() {
-                              gameState.currentPage = 'hub';
-                              showScreen('main-screen');
-                              loadPage('hub');
-                }
+      function startGame(){gameState.currentPage='hub';showScreen('main-screen');loadPage('hub');}
+      function showScreen(screenId){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(screenId).classList.add('active');}
 
-                function showScreen(screenId) {
-                              document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                              document.getElementById(screenId).classList.add('active');
-                }
+      function loadPage(pageName){
+         const content=document.getElementById('content-area');
+         if(pageName==='hub'){
+            content.innerHTML=`<div class="page-header"><h2>INVESTIGATION HUB</h2><p>Select a section to investigate</p></div><div class="evidence-grid"><div class="evidence-card" onclick="loadPage('evidence')"><div class="evidence-title">🔍 Evidence Locker</div><p style="font-size:0.8em;color:var(--text-secondary);">15 items to examine</p></div><div class="evidence-card" onclick="loadPage('suspects')"><div class="evidence-title">👥 Suspects</div><p style="font-size:0.8em;color:var(--text-secondary);">4 persons of interest</p></div><div class="evidence-card" onclick="loadPage('timeline')"><div class="evidence-title">📅 Timeline</div><p style="font-size:0.8em;color:var(--text-secondary);">Events & dates</p></div><div class="evidence-card" onclick="loadPage('verdict')"><div class="evidence-title">🎯 Make Verdict</div><p style="font-size:0.8em;color:var(--text-secondary);">Submit your accusation</p></div></div><div class="list-item"><strong>Case Status:</strong> HOMICIDE INVESTIGATION<br><strong>Victim:</strong> Tyler James Bradshaw, age 31<br><strong>Date of Death:</strong> December 16, 2000<br><strong>Location:</strong> Lake Barron, Ohio<br><strong>Manner of Death:</strong> Gunshot wound (homicide)</div>`;document.getElementById('page-title').textContent='Investigation Hub';}
+         else if(pageName==='evidence'){
+            let html='<div class="page-header"><h2>EVIDENCE LOCKER</h2><p>Examine the 15 pieces of evidence</p></div><div class="evidence-grid">';GAME_DATA.evidence.forEach((ev,i)=>{html+=`<div class="evidence-card" onclick="viewEvidence(${i})"><div style="color:var(--accent-color);font-weight:bold;">#${ev.id}</div><div class="evidence-title">${ev.title}</div></div>`;});html+='</div><button class="btn btn-primary" onclick="loadPage(\'hub\')">← Back to Hub</button>';content.innerHTML=html;document.getElementById('page-title').textContent='Evidence Locker';updateEvidenceCount();}
+         else if(pageName==='suspects'){
+            let html='<div class="page-header"><h2>SUSPECTS</h2><p>Persons of interest in the investigation</p></div>';GAME_DATA.suspects.forEach(suspect=>{html+=`<div class="suspect-card"><div class="suspect-name">${suspect.name}</div><div style="color:var(--accent-color);font-weight:bold;margin-bottom:10px;">${suspect.role}</div><div class="suspect-details">${suspect.details}</div></div>`;});html+='<button class="btn btn-primary" onclick="loadPage(\'hub\')">← Back to Hub</button>';content.innerHTML=html;document.getElementById('page-title').textContent='Suspects';}
+         else if(pageName==='timeline'){
+            content.innerHTML=`<div class="page-header"><h2>INVESTIGATION TIMELINE</h2><p>Key events in chronological order</p></div><div class="list-item"><strong>December 14, 2000:</strong><br>Derek and Megan have lengthy 83-minute phone call (9:15 PM). Likely coordinating murder plan.</div><div class="list-item"><strong>December 15, 2000:</strong><br>Derek calls Tyler to invite him duck hunting. Tyler accepts. Setting up the murder scenario.</div><div class="list-item"><strong>December 16, 2000 - MURDER DAY:</strong><br>7:15 AM - Tyler leaves home for "hunting trip"<br>7:30 AM - Derek already at Lake Barron (despite later claims)<br>8:12 AM - Derek calls Tyler<br>9:02 AM - Derek calls Megan immediately after<br>Tyler shot at close range with 12-gauge shotgun<br>Body transported 2+ miles and buried in wooded area<br>5:47 PM - Megan files missing person report</div><div class="list-item"><strong>December 18, 2000:</strong><br>Derek gives false statement claiming Tyler never arrived at lake.</div><div class="list-item"><strong>February 14, 2001:</strong><br>Body discovered buried in woods. Decomposition consistent with December death.</div><button class="btn btn-primary" onclick="loadPage('hub')">← Back to Hub</button>`;document.getElementById('page-title').textContent='Timeline';}
+         else if(pageName==='verdict'){
+            content.innerHTML=`<div class="page-header"><h2>SUBMIT YOUR VERDICT</h2><p>Based on the evidence, who killed Tyler Bradshaw?</p></div><div style="margin-bottom:30px;"><label><strong>Who is guilty?</strong></label><div style="margin-left:20px;"><label><input type="radio" name="verdict" value="derek"> Derek Haynes (acting alone)</label><label><input type="radio" name="verdict" value="megan"> Megan Bradshaw (acting alone)</label><label><input type="radio" name="verdict" value="both"> Derek & Megan (conspiracy)</label><label><input type="radio" name="verdict" value="unknown"> Unknown/Insufficient evidence</label></div></div><button class="btn btn-primary" onclick="submitVerdict()">→ SUBMIT VERDICT ←</button><button class="btn btn-primary" style="background-color:var(--background-light);color:var(--text-primary);border:2px solid var(--border-color);margin-top:10px;" onclick="loadPage('hub')">← Back to Hub</button>`;document.getElementById('page-title').textContent='Submit Verdict';}
+     }
 
-                function loadPage(pageName) {
-                              const content = document.getElementById('content-area');
+      function viewEvidence(index){
+         const evidence=GAME_DATA.evidence[index];gameState.evidenceReviewed.add(evidence.id);
+         const modal=document.getElementById('detail-modal');const body=document.getElementById('modal-body');body.innerHTML=`<h2 style="color:var(--primary-color);margin-bottom:15px;">EVIDENCE #${evidence.id}: ${evidence.title}</h2><p style="margin-bottom:15px;line-height:1.6;">${evidence.content}</p><div style="background-color:var(--background-dark);padding:15px;border-left:3px solid var(--accent-color);margin-top:20px;"><strong>INVESTIGATOR'S NOTES:</strong><br><p style="margin-top:10px;">${evidence.details}</p></div><button class="btn btn-primary" onclick="closeModal()" style="margin-top:20px;">Close</button>`;modal.classList.add('active');updateEvidenceCount();}
 
-                              if (pageName === 'hub') {
-                                                content.innerHTML = `
-                                                                    <div class="page-header">
-                                                                                            <h2>INVESTIGATION HUB</h2>
-                                                                                                                    <p>Select a section to investigate</p>
-                                                                                                                                        </div>
-                                                                                                                                                            
-                                                                                                                                                                                <div class="evidence-grid">
-                                                                                                                                                                                                        <div class="evidence-card" onclick="loadPage('evidence')">
-                                                                                                                                                                                                                                    <div class="evidence-title">🔍 Evidence Locker</div>
-                                                                                                                                                                                                                                                                <p style="font-size: 0.8em; color: var(--text-secondary);">15 items to examine</p>
-                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                                <div class="evidence-card" onclick="loadPage('suspects')">
-                                                                                                                                                                                                                                                                                                                                            <div class="evidence-title">👥 Suspects</div>
-                                                                                                                                                                                                                                                                                                                                                                        <p style="font-size: 0.8em; color: var(--text-secondary);">4 persons of interest</p>
-                                                                                                                                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                        <div class="evidence-card" onclick="loadPage('timeline')">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    <div class="evidence-title">📅 Timeline</div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <p style="font-size: 0.8em; color: var(--text-secondary);">Events & dates</p>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <div class="evidence-card" onclick="loadPage('verdict')">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <div class="evidence-title">🎯 Make Verdict</div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <p style="font-size: 0.8em; color: var(--text-secondary);">Submit your accusation</p>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <div class="list-item">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <strong>Case Status:</strong> HOMICIDE INVESTIGATION<br>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <strong>Victim:</strong> Tyler James Bradshaw, age 31<br>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <strong>Date of Death:</strong> December 16, 2000<br>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <strong>Location:</strong> Lake Barron, Ohio<br>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <strong>Manner of Death:</strong> Gunshot wound (homicide)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        `;
-                                                document.getElementById('page-title').textContent = 'Investigation Hub';
-                              }
+      function closeModal(){document.getElementById('detail-modal').classList.remove('active');}
+      function updateEvidenceCount(){document.getElementById('evidence-count').textContent=gameState.evidenceReviewed.size+'/15';}
 
-                    else if (pageName === 'evidence') {
-                                      let html = '<div class="page-header"><h2>EVIDENCE LOCKER</h2><p>Examine the 15 pieces of evidence</p></div><div class="evidence-grid">';
-                                      GAME_DATA.evidence.forEach((ev, i) => {
-                                                            html += `<div class="evidence-card" onclick="viewEvidence(${i})"><div style="color: var(--accent-color); font-weight: bold;">#${ev.id}</div><div class="evidence-title">${ev.title}</div></div>`;
-                                      });
-                                      html += '</div><button class="btn btn-primary" onclick="loadPage(\'hub\')">← Back to Hub</button>';
-                                      content.innerHTML = html;
-                                      document.getElementById('page-title').textContent = 'Evidence Locker';
-                                      updateEvidenceCount();
-                    }
+      function submitVerdict(){
+         const verdict=document.querySelector('input[name="verdict"]:checked')?.value;if(!verdict){alert('Please select a verdict');return;}
+         gameState.verdict=verdict;let result='';
+         if(verdict==='both'){result='🎖️ CASE SOLVED! CORRECT VERDICT!\n\nYou correctly identified Derek Haynes & Megan Bradshaw as co-conspirators in Tyler\'s murder.\n\nMOTIVE: Financial ($500K insurance) + Romantic (affair)\nMEANS: Derek\'s shotgun\nOPPORTUNITY: Coordinated hunting trip setup\nEVIDENCE: Phone records, fingerprints, gunshot residue, insurance policy\n\nCONGRATULATIONS - You solved the case!';}
+         else if(verdict==='derek'){result='⚠️ PARTIAL SOLUTION\n\nYou identified Derek Haynes as the murderer (correct!) but missed that Megan Bradshaw was his co-conspirator.\n\nThis was NOT a solo crime - it was a conspiracy for the insurance money and romance.';}
+         else if(verdict==='megan'){result='❌ INCORRECT VERDICT\n\nWhile Megan had financial motive, Derek was the one who pulled the trigger. This was a CONSPIRACY - both are guilty.\n\nThe correct answer: Derek & Megan (conspiracy)';}
+         else{result='❌ CASE DISMISSED\n\nWithout sufficient evidence and a clear verdict, the case was dismissed. The real killers (Derek & Megan) walk free.\n\nTHE TRUTH: Derek Haynes and Megan Bradshaw conspired to murder Tyler for the $500K insurance payout.';}
+         alert(result);
+      }
 
-                              else if (pageName === 'suspects') {
-                                                let html = '<div class="page-header"><h2>SUSPECTS</h2><p>Persons of interest in the investigation</p></div>';
-                                                GAME_DATA.suspects.forEach(suspect => {
-                                                                      html += `
-                                <div class="suspect-card">
-                                                            <div class="suspect-name">${suspect.name}</div>
-                                                                                        <div style="color: var(--accent-color); font-weight: bold; margin-bottom: 10px;">${suspect.role}</div>
-                                                                                                                    <div class="suspect-details">${suspect.details}</div>
-                                                                                                                                            </div>
-                                                                                                                                                                `;
-                                                });
-                                                html += '<button class="btn btn-primary" onclick="loadPage(\'hub\')">← Back to Hub</button>';
-                                                content.innerHTML = html;
-                                                document.getElementById('page-title').textContent = 'Suspects';
-                              }
-
-                              else if (pageName === 'timeline') {
-                                      content.innerHTML = `
-                                                          <div class="page-header">
-                                                                                  <h2>INVESTIGATION TIMELINE</h2>
-                                                                                                          <p>Key events in chronological order</p>
-                                                                                                                              </div>
-                                                                                                                                                  
-                                                                                                                                                                      <div class="list-item">
-                                                                                                                                                                                              <strong>December 14, 2000:</strong><br>
-                                                                                                                                                                                                                      Derek and Megan have lengthy 83-minute phone call (9:15 PM). Likely coordinating murder plan.
-                                                                                                                                                                                                                                          </div>
-                                                                                                                                                                                                                                                              
-                                                                                                                                                                                                                                                                                  <div class="list-item">
-                                                                                                                                                                                                                                                                                                          <strong>December 15, 2000:</strong><br>
-                                                                                                                                                                                                                                                                                                                                  Derek calls Tyler to invite him duck hunting. Tyler accepts. Setting up the murder scenario.
-                                                                                                                                                                                                                                                                                                                                                      </div>
-                                                                                                                                                                                                                                                                                                                                                                          
-                                                                                                                                                                                                                                                                                                                                                                                              <div class="list-item">
-                                                                                                                                                                                                                                                                                                                                                                                                                      <strong>December 16, 2000 - MURDER DAY:</strong><br>
-                                                                                                                                                                                                                                                                                                                                                                                                                                              7:15 AM - Tyler leaves home for "hunting trip"<br>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                      7:30 AM - Derek already at Lake Barron (despite later claims)<br>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              8:12 AM - Derek calls Tyler<br>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      9:02 AM - Derek calls Megan immediately after<br>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              Tyler shot at close range with 12-gauge shotgun<br>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      Body transported 2+ miles and buried in wooded area<br>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              5:47 PM - Megan files missing person report
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          <div class="list-item">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  <strong>December 18, 2000:</strong><br>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          Derek gives false statement claiming Tyler never arrived at lake.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      <div class="list-item">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              <strong>February 14, 2001:</strong><br>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      Body discovered buried in woods. Decomposition consistent with December death.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  <button class="btn btn-primary" onclick="loadPage(\'hub\')">← Back to Hub</button>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  `;
-                                                document.getElementById('page-title').textContent = 'Timeline';
-                              }
-
-                              else if (pageName === 'verdict') {
-                                                content.innerHTML = `
-                                                                    <div class="page-header">
-                                                                                            <h2>SUBMIT YOUR VERDICT</h2>
-                                                                                                                    <p>Based on the evidence, who killed Tyler Bradshaw?</p>
-                                                                                                                                        </div>
-                                                                                                                                                            
-                                                                                                                                                                                <div style="margin-bottom: 30px;">
-                                                                                                                                                                                                        <label><strong>Who is guilty?</strong></label>
-                                <div style="margin-left: 20px;">
-                                                            <label><input type="radio" name="verdict" value="derek"> Derek Haynes (acting alone)</label>
-                                                                                        <label><input type="radio" name="verdict" value="megan"> Megan Bradshaw (acting alone)</label>
-                                                                                                                    <label><input type="radio" name="verdict" value="both"> Derek & Megan (conspiracy)</label>
-                                                                                                                                                <label><input type="radio" name="verdict" value="unknown"> Unknown/Insufficient evidence</label>
-                                                                                                                                                                        </div>
-                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                
-                                                                                                                                                                                                                                    <button class="btn btn-primary" onclick="submitVerdict()">→ SUBMIT VERDICT ←</button>
-                                                                                                                                                                                                                                                        <button class="btn btn-primary" style="background-color: var(--background-light); color: var(--text-primary); border: 2px solid var(--border-color); margin-top: 10px;" onclick="loadPage(\'hub\')">← Back to Hub</button>
-                                                                                                                                                                                                                                                                        `;
-                                                document.getElementById('page-title').textContent = 'Submit Verdict';
-                              }
-                }
-
-                function viewEvidence(index) {
-                              const evidence = GAME_DATA.evidence[index];
-                              gameState.evidenceReviewed.add(evidence.id);
-
-                              const modal = document.getElementById('detail-modal');
-                              const body = document.getElementById('modal-body');
-                              body.innerHTML = `
-                                              <h2 style="color: var(--primary-color); margin-bottom: 15px;">EVIDENCE #${evidence.id}: ${evidence.title}</h2>
-                                                              <p style="margin-bottom: 15px; line-height: 1.6;">${evidence.content}</p>
-                                                                              <div style="background-color: var(--background-dark); padding: 15px; border-left: 3px solid var(--accent-color); margin-top: 20px;">
-                                                                                                  <strong>INVESTIGATOR'S NOTES:</strong><br>
-                                                                                                                      <p style="margin-top: 10px;">${evidence.details}</p>
-                                                                                                                                      </div>
-                                                                                                                                                      <button class="btn btn-primary" onclick="closeModal()" style="margin-top: 20px;">Close</button>
-                                                                                                                                                                  `;
-                              modal.classList.add('active');
-                              updateEvidenceCount();
-                }
-
-                function closeModal() {
-                              document.getElementById('detail-modal').classList.remove('active');
-                }
-
-                function updateEvidenceCount() {
-                              document.getElementById('evidence-count').textContent = gameState.evidenceReviewed.size + '/15';
-                }
-
-                function submitVerdict() {
-                              const verdict = document.querySelector('input[name="verdict"]:checked')?.value;
-                              if (!verdict) {
-                                                alert('Please select a verdict');
-                                                return;
-                              }
-
-                              gameState.verdict = verdict;
-                              let result = '';
-
-                              if (verdict === 'both') {
-                                                result = '🎖️ CASE SOLVED! CORRECT VERDICT!\n\nYou correctly identified Derek Haynes & Megan Bradshaw as co-conspirators in Tyler\'s murder.\n\nMOTIVE: Financial ($500K insurance) + Romantic (affair)\nMEANS: Derek\'s shotgun\nOPPORTUNITY: Coordinated hunting trip setup\nEVIDENCE: Phone records, fingerprints, gunshot residue, insurance policy\n\nCONGRATULATIONS - You solved the case!';
-                              } else if (verdict === 'derek') {
-                                                result = '⚠️ PARTIAL SOLUTION\n\nYou identified Derek Haynes as the murderer (correct!) but missed that Megan Bradshaw was his co-conspirator.\n\nThis was NOT a solo crime - it was a conspiracy for the insurance money and romance.';
-                              } else if (verdict === 'megan') {
-                                                result = '❌ INCORRECT VERDICT\n\nWhile Megan had financial motive, Derek was the one who pulled the trigger. This was a CONSPIRACY - both are guilty.\n\nThe correct answer: Derek & Megan (conspiracy)';
-                              } else {
-                                                result = '❌ CASE DISMISSED\n\nWithout sufficient evidence and a clear verdict, the case was dismissed. The real killers (Derek & Megan) walk free.\n\nTHE TRUTH: Derek Haynes and Megan Bradshaw conspired to murder Tyler for the $500K insurance payout.';
-                              }
-
-                              alert(result);
-                }
-
-                // Service worker registration
-                if ('serviceWorker' in navigator) {
-                              navigator.serviceWorker.register('sw.js').catch(() => {});
-                }
-                  </script>
+      if('serviceWorker'in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
+        </script>
   </body>
 </html>html>
-      </script></p></p></h1>
+   </script></p></p></h1>
   </body>
-      </style></title>
+   </style></title>
   </head>
