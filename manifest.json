@@ -1,0 +1,23 @@
+{
+    "manifest_version": 3,
+    "name": "Death on Lake Barron: Murder Mystery",
+    "short_name": "Lake Barron Mystery",
+    "version": "1.0.0",
+    "description": "Investigate a murder case. Examine 15 pieces of forensic evidence, interview suspects, and solve who killed Tyler James Bradshaw.",
+    "author": "Mystery Game Creator",
+    "homepage_url": "",
+    "icons": [
+          {
+                  "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%231a1a1a' width='192' height='192'/><text x='50%' y='50%' font-size='80' fill='%23d32f2f' text-anchor='middle' dominant-baseline='central' font-family='Arial'>⚖</text></svg>",
+                  "sizes": "192x192",
+                  "type": "image/svg+xml"
+          }
+    ],
+    "theme_color": "#1a1a1a",
+    "background_color": "#ffffff",
+    "display": "standalone",
+    "scope": "/",
+    "start_url": "index.html",
+    "permissions": [],
+    "offline_enabled": true
+}
